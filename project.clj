@@ -3,7 +3,22 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.8.0"]]
+  :dependencies [[cider/cider-nrepl "0.13.0"]
+                 [org.clojure/clojure "1.8.0"]
+                 [org.clojure/core.async "0.2.391"]
+                 [overtone/at-at "1.2.0"]
+                 [org.clojure/tools.logging "0.3.1"]
+                 [log4j "1.2.15" :exclusions  [javax.mail/mail
+                                              javax.jms/jms
+                                              com.sun.jdmk/jmxtools
+                                              com.sun.jmx/jmxri]]
+                 [org.slf4j/slf4j-log4j12 "1.6.6"]
+                 [aleph "0.4.1"]
+                 [gloss "0.2.5"]
+		 [org.clojure/tools.cli "0.3.3"]]
   :main ^:skip-aot hyparview.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:uberjar {:aot :all}
+        :dev {:resource-paths ["resources/dev"]}
+        :prod {:resource-paths ["resources/prod"]}}
+  )
