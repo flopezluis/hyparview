@@ -9,17 +9,6 @@
             [clojure.string :as str]
             [clojure.tools.logging :as log]))
 
-(defmulti process-message (fn [msg] (.get msg 0)))
-(defmethod process-message :join
-  [msg]
-  (log/debug "join")
-  (.get msg 1))
-
-(defmethod process-message :disconnect
-  [msg]
-  (log/debug "disconnect")
-  (.get msg 1))
-
 (def protocol
   (gloss/compile-frame
    (gloss/finite-frame :uint32
@@ -38,18 +27,21 @@
      (io/decode-stream s protocol))))
 
 (defn handler
-  [s info]
+  [f s info]
     (s/connect
-     (s/map process-message s)
+     (s/map f s)
     s))
 
 (defn start-server
-  [port]
+  [port f]
   (log/debug "Listening.. " port)
   (tcp/start-server
    (fn [s info]
-     (handler (wrap-duplex-stream protocol s) info))
+     (handler f (wrap-duplex-stream protocol s) info))
    {:port port}))
+
+(defn send-forward-join [to new-node from]
+  (log/debug (str "Sending Forward-Join to: " to " new-node " new-node " from " from)))
 
 (defn client
   [host port]

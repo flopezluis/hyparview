@@ -15,6 +15,7 @@
                  [org.slf4j/slf4j-log4j12 "1.6.6"]
                  [aleph "0.4.1"]
                  [gloss "0.2.5"]
+                 [org.senatehouse/expect-call "0.1.0"]
 		 [org.clojure/tools.cli "0.3.3"]]
   :main ^:skip-aot hyparview.core
   :target-path "target/%s"
