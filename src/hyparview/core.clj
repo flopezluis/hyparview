@@ -1,7 +1,7 @@
 (ns hyparview.core
   (:require
    [hyparview.transport :as transport]
-   [hyparview.protocol :as protocol]
+   [hyparview.manager :as manager]
    [clojure.tools.logging :as log]
    [clojure.core.async :as async :refer [go-loop <! timeout]])
   (:gen-class))
@@ -9,7 +9,7 @@
 
 (defn init-server
   []
-  (transport/start-server 10012 protocol/process-message))
+  (transport/start-server 10013 manager/process-message))
 
 (defn do-something
   []

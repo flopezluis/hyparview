@@ -40,12 +40,21 @@
      (handler f (wrap-duplex-stream protocol s) info))
    {:port port}))
 
-(defn send-forward-join [to new-node from]
-  (log/debug (str "Sending Forward-Join to: " to " new-node " new-node " from " from)))
-
 (defn client
-  [host port]
-  (d/chain (tcp/client {:host host, :port port})
-           #(wrap-duplex-stream protocol %)))
+  ([node]
+   (let [parts (str/split node #":")]
+     (client (.get parts 0) (Integer. (.get parts 1)))))
+  ([host port]
+   (d/chain (tcp/client {:host host, :port port})
+            #(wrap-duplex-stream protocol %))))
+
+(defn send-forward-join
+  ([to new-node from]
+   (send-forward-join to new-node from 6))
+  ([to new-node from arwl]
+   (log/debug (str "Sending Forward-Join to: " to " new-node " new-node " from " from " arwl " arwl))
+   (let [c @(client to)]
+     (s/put! c {:type :forward-join :data {:new-node new-node :arwl arwl :sender from}}))))
+
 
 (comment (def myc @(client "localhost" 10011)))
