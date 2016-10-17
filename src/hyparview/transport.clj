@@ -6,8 +6,10 @@
             [clojure.edn :as edn]
             [manifold.deferred :as d]
             [manifold.stream :as s]
+            [hyparview.config :refer [conf]]
             [clojure.string :as str]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log])
+  (:import [java.net InetSocketAddress]))
 
 (def protocol
   (gloss/compile-frame
@@ -33,12 +35,12 @@
     s))
 
 (defn start-server
-  [port f]
-  (log/debug "Listening.. " port)
+  [f]
+  (log/debug "Listening.. " (:port conf))
   (tcp/start-server
    (fn [s info]
      (handler f (wrap-duplex-stream protocol s) info))
-   {:port port}))
+   {:socket-address (InetSocketAddress. (:address conf) (:port conf))}))
 
 (defn client
   ([node]

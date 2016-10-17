@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [hyparview.transport :refer :all]
             [hyparview.manager :refer :all]
+            [hyparview.config :refer [conf load-conf]]
             [manifold.stream :as s]))
 
 (defmacro with-server [server & body]
@@ -15,7 +16,8 @@
 (deftest test-server
   (dosync
    (ref-set active-members []))
-  (with-server (start-server 10000 process-message)
-    (let [c @(client "localhost" 10000)]
-      (s/put! c {:type :join :data {:new-node "localhost:5555"}})
-      (is (= "localhost:5555"  @(s/take! c))))))
+  (with-redefs [conf {:address "127.0.0.1" :port 10000 :max-active-view 5}] 
+                (with-server (start-server process-message)
+                  (let [c @(client "127.0.0.1" 10000)]
+                    (s/put! c {:type :join :data {:new-node "localhost:5555"}})
+                    (is (= "localhost:5555"  @(s/take! c)))))))

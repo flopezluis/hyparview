@@ -10,7 +10,7 @@
 (def active-members (ref []))
 (def passive-members (ref []))
 (def timers (ref {}))
-(def me (atom ""))
+(def me (str (:address conf) ":" (:port conf)))
 
 (def config-file "dev/config.edn")
 (load-conf config-file)
@@ -42,7 +42,7 @@
     (if (not= node new-node)
       (do
         (log/debug (str "forwarding " new-node " to " node ))
-        (transport/send-forward-join node new-node @me)))))
+        (transport/send-forward-join node new-node me)))))
 
 (defn drop-from-active-view [node]
   (prn (str "drop " node)))
@@ -75,7 +75,7 @@
       (if (= :arwl data) (:PRWL conf)
           (add-to-passive-view data))
       (let [node (select-random-member [(:sender data)])]
-        (transport/send-forward-join node (:new-node data) @me (- (:arwl data) 1))))))
+        (transport/send-forward-join node (:new-node data) me (- (:arwl data) 1))))))
 
 (defmethod process-message :disconnect
   [msg]
