@@ -3,6 +3,7 @@
             [org.senatehouse.expect-call :refer :all]
             [hyparview.manager :refer :all]
             [hyparview.transport :refer :all]
+            [hyparview.config :refer [conf load-conf]]
             [manifold.stream :as s]))
 
 (def member1 {:data {:new-node "127.0.0.1:5557"}})
@@ -24,6 +25,12 @@
     (load-fixtures)
     (is (= (is-there-a-slot-free? :active-view "127.0.0.1:5555") true))
     (is (= (is-there-a-slot-free? :active-view "127.0.0.1:5556" ) false))))
+
+(deftest test-full-is-there-a-slot-free?
+  (testing "Tests if there are free slots in views"
+    (load-fixtures)
+    (with-redefs [conf {:max-active-view 1}] 
+      (is (= (is-there-a-slot-free? :active-view "127.0.0.1:5555") false)))))
 
 (deftest test-forward-join
   (testing "that the forward is sent to the active view"
